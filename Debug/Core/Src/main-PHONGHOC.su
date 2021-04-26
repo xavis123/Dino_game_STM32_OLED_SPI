@@ -1,0 +1,8 @@
+main.c:94:6:HAL_TIM_PeriodElapsedCallback	0	static
+main.c:102:15:dino_work	24	static
+main.c:145:16:sword_work	24	static
+main.c:197:17:cactus_work	32	static
+main.c:226:7:display	56	static
+main.c:423:6:SystemClock_Config	72	static
+main.c:294:5:main	176	static
+main.c:659:6:Error_Handler	0	static
