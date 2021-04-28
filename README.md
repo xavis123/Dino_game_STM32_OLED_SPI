@@ -1,4 +1,4 @@
-# Dino_game_STM32_OLED_SPI_1
+# Dino_game_STM32_OLED_SPI
 Dino game run in STM32
 Use STM32F103RCT8, OLED SPI SH1106, 2 button
 
