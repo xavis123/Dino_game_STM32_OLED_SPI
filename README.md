@@ -1,8 +1,11 @@
 # Dino_game_STM32_OLED_SPI
-Dino game run in STM32
+Dino game run in STM32.
 
-Use STM32F103RCT8, OLED SPI SH1106, 2 button
+Use STM32F103RCT8, OLED SPI SH1106, 2 button.
 
+Dino can collect and use sword to cut tree. Sword have durability.
+
+Game have day and night mode, have bird.
 
 ![alt text](https://github.com/xavis123/Dino_game_STM32_OLED_SPI/blob/c6e8a94b23d246fa953ada3cb53f23e79e41ec63/IMG_2112.png?raw=true)
 
