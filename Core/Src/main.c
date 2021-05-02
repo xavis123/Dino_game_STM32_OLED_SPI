@@ -121,26 +121,26 @@ void dino_work()
 {
   //dino position
   if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_RESET || dino1.y_dino != 38)
-  //moi khi nhan nut hoac trong luc con dino dang nhay va cach nhau it nhat 1 khoang thoi gian
+  //when play push button or dino is jumping/downing
   {
 
-    if ((dino1.y_dino == 28) && (dino1.level_jump_dino == -2)) // tang giam toc do nhay theo quan tinh
+    if ((dino1.y_dino == 28) && (dino1.level_jump_dino == -2)) // increase/decrese jump speed like inertia
       dino1.level_jump_dino = -1;
     if ((dino1.y_dino == 24) && (dino1.level_jump_dino == 1))
       dino1.level_jump_dino = 2;
 
-    if (dino1.y_dino == 38) // 38 la vi tri mac dinh
+    if (dino1.y_dino == 38) // 38 is default position (when dino in ground)
     {
-      dino1.level_jump_dino = -2; // dino nhay len
+      dino1.level_jump_dino = -2; // dino jumping
     }
-    if (dino1.y_dino == 12) //12 la vi tri cao nhat khi nhay
+    if (dino1.y_dino == 12) //12 is the highest position when dino jumping
     {
-      dino1.level_jump_dino = 1; // dino ha xuong
+      dino1.level_jump_dino = 1; // dino downing
     }
-    dino1.y_dino = dino1.y_dino + dino1.level_jump_dino; //dino1.y_dino thay doi theo dino1.level_jump_dino
+    dino1.y_dino = dino1.y_dino + dino1.level_jump_dino; //y_dino change
   }
 
-  //    //chan dino
+  //    //foot dino
   //    if (dino1.fl_dino_foot == 1)
   //    {
   //    	dino1.fl_dino_foot=0;

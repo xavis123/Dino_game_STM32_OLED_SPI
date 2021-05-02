@@ -31,13 +31,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  13 .debug_ranges 000011a0  00000000  00000000  0003c440  2**3
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_line   00005fe1  00000000  00000000  0003d5e0  2**0
+ 14 .debug_line   00005fdf  00000000  00000000  0003d5e0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_str    00003ee0  00000000  00000000  000435c1  2**0
+ 15 .debug_str    00003ee0  00000000  00000000  000435bf  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .comment      0000007c  00000000  00000000  000474a1  2**0
+ 16 .comment      0000007c  00000000  00000000  0004749f  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  00001fc8  00000000  00000000  00047520  2**2
+ 17 .debug_frame  00001fc8  00000000  00000000  0004751c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -118,11 +118,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 08000270 <dino_work>:
 }
 
-  void dino_work()
-  {
+void dino_work()
+{
  8000270:	b508      	push	{r3, lr}
-	//dino position
-    if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_RESET || dino1.y_dino != 38)
+  //dino position
+  if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_RESET || dino1.y_dino != 38)
  8000272:	2101      	movs	r1, #1
  8000274:	481d      	ldr	r0, [pc, #116]	; (80002ec <dino_work+0x7c>)
  8000276:	f001 faa1 	bl	80017bc <HAL_GPIO_ReadPin>
@@ -131,36 +131,36 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800027e:	685a      	ldr	r2, [r3, #4]
  8000280:	2a26      	cmp	r2, #38	; 0x26
  8000282:	d00b      	beq.n	800029c <dino_work+0x2c>
-    //moi khi nhan nut hoac trong luc con dino dang nhay va cach nhau it nhat 1 khoang thoi gian
-    {
+  //when play push button or dino is jumping/downing
+  {
 
-      if ((dino1.y_dino == 28) && (dino1.level_jump_dino == -2)) // tang giam toc do nhay theo quan tinh
+    if ((dino1.y_dino == 28) && (dino1.level_jump_dino == -2)) // increase/decrese jump speed like inertia
  8000284:	685a      	ldr	r2, [r3, #4]
  8000286:	2a1c      	cmp	r2, #28
  8000288:	d11f      	bne.n	80002ca <dino_work+0x5a>
  800028a:	68d9      	ldr	r1, [r3, #12]
  800028c:	3102      	adds	r1, #2
  800028e:	d102      	bne.n	8000296 <dino_work+0x26>
-    	  dino1.level_jump_dino = -1;
+      dino1.level_jump_dino = -1;
  8000290:	f04f 31ff 	mov.w	r1, #4294967295
-      {
-    	  dino1.level_jump_dino = -2; // dino nhay len
-      }
-      if (dino1.y_dino == 12) //12 la vi tri cao nhat khi nhay
-      {
-    	  dino1.level_jump_dino = 1; // dino ha xuong
+    {
+      dino1.level_jump_dino = -2; // dino jumping
+    }
+    if (dino1.y_dino == 12) //12 is the highest position when dino jumping
+    {
+      dino1.level_jump_dino = 1; // dino downing
  8000294:	60d9      	str	r1, [r3, #12]
-      }
-      dino1.y_dino = dino1.y_dino + dino1.level_jump_dino; //dino1.y_dino thay doi theo dino1.level_jump_dino
+    }
+    dino1.y_dino = dino1.y_dino + dino1.level_jump_dino; //y_dino change
  8000296:	68d9      	ldr	r1, [r3, #12]
  8000298:	440a      	add	r2, r1
  800029a:	605a      	str	r2, [r3, #4]
-//    else if (dino1.fl_dino_foot == 0)
-//    	dino1.fl_dino_foot=1;
+  //    }
+  //    else if (dino1.fl_dino_foot == 0)
+  //    	dino1.fl_dino_foot=1;
 
-
-    //dino dead
-    if ((cactus1.x_cactus > 5) && (cactus1.x_cactus < 24) && (dino1.y_dino > 34) && (cactus1.fl_cactus_destroy  == 0))
+  //dino dead
+  if ((cactus1.x_cactus > 5) && (cactus1.x_cactus < 24) && (dino1.y_dino > 34) && (cactus1.fl_cactus_destroy == 0))
  800029c:	4915      	ldr	r1, [pc, #84]	; (80002f4 <dino_work+0x84>)
  800029e:	680a      	ldr	r2, [r1, #0]
  80002a0:	3a06      	subs	r2, #6
@@ -171,14 +171,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80002aa:	dd03      	ble.n	80002b4 <dino_work+0x44>
  80002ac:	688a      	ldr	r2, [r1, #8]
  80002ae:	b90a      	cbnz	r2, 80002b4 <dino_work+0x44>
-    {
-      //if cactus.x_cactus in 5-> 24 and dino don't jump and cactus not be destroyed
-    	dino1.dino_status = 1; //dino dead
+  {
+    //if cactus.x_cactus in 5-> 24 and dino don't jump and cactus not be destroyed
+    dino1.dino_status = 1; //dino dead
  80002b0:	2201      	movs	r2, #1
  80002b2:	609a      	str	r2, [r3, #8]
-    }
+  }
 
-    if ((bird1.x_bird  > 5) && (bird1.x_bird  < 24) && (dino1.y_dino < 20))
+  if ((bird1.x_bird > 5) && (bird1.x_bird < 24) && (dino1.y_dino < 20))
  80002b4:	4a10      	ldr	r2, [pc, #64]	; (80002f8 <dino_work+0x88>)
  80002b6:	6812      	ldr	r2, [r2, #0]
  80002b8:	3a06      	subs	r2, #6
@@ -187,34 +187,33 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80002be:	685a      	ldr	r2, [r3, #4]
  80002c0:	2a13      	cmp	r2, #19
  80002c2:	dc12      	bgt.n	80002ea <dino_work+0x7a>
-    {
-    	//if bird in 5-> 24 and dino is jumping and cactus not be destroyed
-    	   dino1.dino_status = 1; //dino dead
+  {
+    //if bird in 5-> 24 and dino is jumping and cactus not be destroyed
+    dino1.dino_status = 1; //dino dead
  80002c4:	2201      	movs	r2, #1
  80002c6:	609a      	str	r2, [r3, #8]
-    }
-
   }
+}
  80002c8:	bd08      	pop	{r3, pc}
-      if ((dino1.y_dino == 24) && (dino1.level_jump_dino == 1))
+    if ((dino1.y_dino == 24) && (dino1.level_jump_dino == 1))
  80002ca:	2a18      	cmp	r2, #24
  80002cc:	d104      	bne.n	80002d8 <dino_work+0x68>
  80002ce:	68d9      	ldr	r1, [r3, #12]
  80002d0:	2901      	cmp	r1, #1
  80002d2:	d1e0      	bne.n	8000296 <dino_work+0x26>
-    	  dino1.level_jump_dino = 2;
+      dino1.level_jump_dino = 2;
  80002d4:	2102      	movs	r1, #2
  80002d6:	e7dd      	b.n	8000294 <dino_work+0x24>
-      if (dino1.y_dino == 38) // 38 la vi tri mac dinh
+    if (dino1.y_dino == 38) // 38 is default position (when dino in ground)
  80002d8:	2a26      	cmp	r2, #38	; 0x26
  80002da:	d102      	bne.n	80002e2 <dino_work+0x72>
-    	  dino1.level_jump_dino = -2; // dino nhay len
+      dino1.level_jump_dino = -2; // dino jumping
  80002dc:	f06f 0101 	mvn.w	r1, #1
  80002e0:	e7d8      	b.n	8000294 <dino_work+0x24>
-      if (dino1.y_dino == 12) //12 la vi tri cao nhat khi nhay
+    if (dino1.y_dino == 12) //12 is the highest position when dino jumping
  80002e2:	2a0c      	cmp	r2, #12
  80002e4:	d1d7      	bne.n	8000296 <dino_work+0x26>
-    	  dino1.level_jump_dino = 1; // dino ha xuong
+      dino1.level_jump_dino = 1; // dino downing
  80002e6:	2101      	movs	r1, #1
  80002e8:	e7d4      	b.n	8000294 <dino_work+0x24>
  80002ea:	bd08      	pop	{r3, pc}
@@ -225,14 +224,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 080002fc <sword_work>:
 
-  void sword_work()
-  {
-    /////////////////////////////Sword appear////////////////////////////////////////////////////
-    if ((score != 0) && (score % 800 == 0) && (sword1.fl_dino_have_sword == 0))
+void sword_work()
+{
+  /////////////////////////////Sword appear////////////////////////////////////////////////////
+  if ((score != 0) && (score % 800 == 0) && (sword1.fl_dino_have_sword == 0))
  80002fc:	4b2d      	ldr	r3, [pc, #180]	; (80003b4 <sword_work+0xb8>)
-  {
+{
  80002fe:	b510      	push	{r4, lr}
-    if ((score != 0) && (score % 800 == 0) && (sword1.fl_dino_have_sword == 0))
+  if ((score != 0) && (score % 800 == 0) && (sword1.fl_dino_have_sword == 0))
  8000300:	681a      	ldr	r2, [r3, #0]
  8000302:	4c2d      	ldr	r4, [pc, #180]	; (80003b8 <sword_work+0xbc>)
  8000304:	b162      	cbz	r2, 8000320 <sword_work+0x24>
@@ -242,16 +241,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000312:	b92b      	cbnz	r3, 8000320 <sword_work+0x24>
  8000314:	68a3      	ldr	r3, [r4, #8]
  8000316:	b91b      	cbnz	r3, 8000320 <sword_work+0x24>
-    {
-      sword1.fl_sword_must_appear = 1;//if dino dont have sword and score % 80 = 0 -> sword appear
+  {
+    sword1.fl_sword_must_appear = 1; //if dino dont have sword and score % 80 = 0 -> sword appear
  8000318:	2301      	movs	r3, #1
  800031a:	6123      	str	r3, [r4, #16]
-      sword1.x_sword = 115;
+    sword1.x_sword = 115;
  800031c:	2373      	movs	r3, #115	; 0x73
  800031e:	6023      	str	r3, [r4, #0]
-    }
+  }
 
-    if ((speed_sword > 200) && (sword1.fl_sword_must_appear == 1))
+  if ((speed_sword > 200) && (sword1.fl_sword_must_appear == 1))
  8000320:	4b26      	ldr	r3, [pc, #152]	; (80003bc <sword_work+0xc0>)
  8000322:	681a      	ldr	r2, [r3, #0]
  8000324:	2ac8      	cmp	r2, #200	; 0xc8
@@ -259,25 +258,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000328:	6922      	ldr	r2, [r4, #16]
  800032a:	2a01      	cmp	r2, #1
  800032c:	d11a      	bne.n	8000364 <sword_work+0x68>
-    {
-      speed_sword = 0;//sword position
+  {
+    speed_sword = 0;
  800032e:	2200      	movs	r2, #0
  8000330:	601a      	str	r2, [r3, #0]
-      sword1.x_sword--;
+    sword1.x_sword--;//sword position
  8000332:	6823      	ldr	r3, [r4, #0]
  8000334:	3b01      	subs	r3, #1
-      if (sword1.x_sword <= 1)       //if sword display end of screen but dino dont eat
+    if (sword1.x_sword <= 1)           //if sword display at end of screen but dino dont eat
  8000336:	2b01      	cmp	r3, #1
-      sword1.x_sword--;
+    sword1.x_sword--;//sword position
  8000338:	6023      	str	r3, [r4, #0]
-      if (sword1.x_sword <= 1)       //if sword display end of screen but dino dont eat
+    if (sword1.x_sword <= 1)           //if sword display at end of screen but dino dont eat
  800033a:	dc03      	bgt.n	8000344 <sword_work+0x48>
-        sword1.fl_sword_must_appear = 0;  //-> sword disappear
+      sword1.fl_sword_must_appear = 0; //-> sword disappear
  800033c:	6122      	str	r2, [r4, #16]
-    }
+  }
 
-    //position dino: x= 10->30
-    if ((sword1.fl_sword_must_appear == 1) && (10 < sword1.x_sword) && (sword1.x_sword < 30) && (18 < dino1.y_dino) && (dino1.y_dino < 22))
+  //position dino: x= 10->30
+  if ((sword1.fl_sword_must_appear == 1) && (10 < sword1.x_sword) && (sword1.x_sword < 30) && (18 < dino1.y_dino) && (dino1.y_dino < 22))
  800033e:	6923      	ldr	r3, [r4, #16]
  8000340:	2b01      	cmp	r3, #1
  8000342:	d10f      	bne.n	8000364 <sword_work+0x68>
@@ -290,20 +289,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000350:	3b13      	subs	r3, #19
  8000352:	2b02      	cmp	r3, #2
  8000354:	d806      	bhi.n	8000364 <sword_work+0x68>
-    {
-      sword1.fl_sword_must_appear = 0;
+  {
+    sword1.fl_sword_must_appear = 0;
  8000356:	2300      	movs	r3, #0
  8000358:	6123      	str	r3, [r4, #16]
-      sword1.fl_dino_have_sword = 1;
+    sword1.fl_dino_have_sword = 1;
  800035a:	2301      	movs	r3, #1
  800035c:	60a3      	str	r3, [r4, #8]
-      sword1.durable_sword=1000;
+    sword1.durable_sword = 1000;
  800035e:	f44f 737a 	mov.w	r3, #1000	; 0x3e8
  8000362:	60e3      	str	r3, [r4, #12]
-    }
+  }
 
-    ///////////////////////////////Sword cut///////////////////////////////////////////////
-    if ((HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_RESET) && (sword1.fl_dino_have_sword == 1))
+  ///////////////////////////////Sword cut///////////////////////////////////////////////
+  if ((HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_RESET) && (sword1.fl_dino_have_sword == 1))
  8000364:	2180      	movs	r1, #128	; 0x80
  8000366:	4817      	ldr	r0, [pc, #92]	; (80003c4 <sword_work+0xc8>)
  8000368:	f001 fa28 	bl	80017bc <HAL_GPIO_ReadPin>
@@ -311,21 +310,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800036e:	68a3      	ldr	r3, [r4, #8]
  8000370:	2b01      	cmp	r3, #1
  8000372:	d11c      	bne.n	80003ae <sword_work+0xb2>
-    {
-      sword1.durable_sword = sword1.durable_sword - 5;
+  {
+    sword1.durable_sword = sword1.durable_sword - 5;
  8000374:	68e3      	ldr	r3, [r4, #12]
-      {
-    	  sword1.fl_sword = 0; //cut up
+    {
+      sword1.fl_sword = 0; //cut down
  8000376:	6160      	str	r0, [r4, #20]
-      sword1.durable_sword = sword1.durable_sword - 5;
+    sword1.durable_sword = sword1.durable_sword - 5;
  8000378:	3b05      	subs	r3, #5
  800037a:	60e3      	str	r3, [r4, #12]
-    else
-      sword1.fl_sword = 1; //normal
+  else
+    sword1.fl_sword = 1; //normal
 
-    //sword cut effect position: x= 25 -> 44
+  //sword cut effect position: x= 25 -> 44
 
-    if ((sword1.fl_sword == 0) && (25 < cactus1.x_cactus) && (cactus1.x_cactus < 44) && (dino1.y_dino == 38)
+  if ((sword1.fl_sword == 0) && (25 < cactus1.x_cactus) && (cactus1.x_cactus < 44) && (dino1.y_dino == 38) && (sword1.fl_dino_have_sword == 1) && (sword1.durable_sword > 0))
  800037c:	6963      	ldr	r3, [r4, #20]
  800037e:	b97b      	cbnz	r3, 80003a0 <sword_work+0xa4>
  8000380:	4a11      	ldr	r2, [pc, #68]	; (80003c8 <sword_work+0xcc>)
@@ -337,29 +336,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800038c:	685b      	ldr	r3, [r3, #4]
  800038e:	2b26      	cmp	r3, #38	; 0x26
  8000390:	d106      	bne.n	80003a0 <sword_work+0xa4>
-    		&& (sword1.fl_dino_have_sword == 1) && (sword1.durable_sword>0))
  8000392:	68a3      	ldr	r3, [r4, #8]
  8000394:	2b01      	cmp	r3, #1
  8000396:	d103      	bne.n	80003a0 <sword_work+0xa4>
  8000398:	68e1      	ldr	r1, [r4, #12]
  800039a:	2900      	cmp	r1, #0
-      // if dino cut a cactus when dino stand on ground (dino not jumping)
-      cactus1.fl_cactus_destroy  = 1; //cactus be destroyed
+    // if dino cut a cactus when dino stand on ground (dino not jumping)
+    cactus1.fl_cactus_destroy = 1; //cactus be destroyed
  800039c:	bfc8      	it	gt
  800039e:	6093      	strgt	r3, [r2, #8]
 
-    if (sword1.durable_sword<=0)
+  if (sword1.durable_sword <= 0)
  80003a0:	68e3      	ldr	r3, [r4, #12]
  80003a2:	2b00      	cmp	r3, #0
-    {
-    	sword1.fl_dino_have_sword = 0;
+  {
+    sword1.fl_dino_have_sword = 0;
  80003a4:	bfde      	ittt	le
  80003a6:	2300      	movle	r3, #0
  80003a8:	60a3      	strle	r3, [r4, #8]
-    	sword1.durable_sword=0;
+    sword1.durable_sword = 0;
  80003aa:	60e3      	strle	r3, [r4, #12]
  80003ac:	bd10      	pop	{r4, pc}
-      sword1.fl_sword = 1; //normal
+    sword1.fl_sword = 1; //normal
  80003ae:	2301      	movs	r3, #1
  80003b0:	6163      	str	r3, [r4, #20]
  80003b2:	e7e3      	b.n	800037c <sword_work+0x80>
@@ -371,63 +369,62 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80003c8:	200004ac 	.word	0x200004ac
 
 080003cc <cactus_work>:
-  void cactus_work()
-  {
-    //////////////////////////////////Cactus////////////////////////////////////////////////////////////////////////
-    int speed_cactus_now;
-    //////////////////////Increase speed cactus by score
-    if (score < 1000) // score display= score /10
+void cactus_work()
+{
+  //////////////////////////////////Cactus////////////////////////////////////////////////////////////////////////
+  int speed_cactus_now;
+  //////////////////////Increase speed cactus by score
+  if (score <= 1000) // score display= score /10
  80003cc:	4b10      	ldr	r3, [pc, #64]	; (8000410 <cactus_work+0x44>)
  80003ce:	681b      	ldr	r3, [r3, #0]
  80003d0:	f5b3 7f7a 	cmp.w	r3, #1000	; 0x3e8
- 80003d4:	db14      	blt.n	8000400 <cactus_work+0x34>
-      speed_cactus_now = 140;
-    else if (score <= 2000)
+ 80003d4:	dd14      	ble.n	8000400 <cactus_work+0x34>
+    speed_cactus_now = 140;
+  else if (score <= 2000)
  80003d6:	f5b3 6ffa 	cmp.w	r3, #2000	; 0x7d0
  80003da:	dd13      	ble.n	8000404 <cactus_work+0x38>
-      speed_cactus_now = 100;
-    else if (score <= 3000)
-      speed_cactus_now = 80;
-    else if (score <= 4000)
-      speed_cactus_now = 40;
+    speed_cactus_now = 100;
+  else if (score <= 3000)
+    speed_cactus_now = 80;
+  else if (score > 3000)
+    speed_cactus_now = 40;
  80003dc:	f640 32b8 	movw	r2, #3000	; 0xbb8
  80003e0:	4293      	cmp	r3, r2
  80003e2:	bfd4      	ite	le
  80003e4:	2350      	movle	r3, #80	; 0x50
  80003e6:	2328      	movgt	r3, #40	; 0x28
-    else if (score > 4000)
-      speed_cactus_now = 40;
 
-    if (speed_cactus > speed_cactus_now)
+
+  if (speed_cactus > speed_cactus_now)
  80003e8:	4a0a      	ldr	r2, [pc, #40]	; (8000414 <cactus_work+0x48>)
  80003ea:	6811      	ldr	r1, [r2, #0]
  80003ec:	428b      	cmp	r3, r1
  80003ee:	da0e      	bge.n	800040e <cactus_work+0x42>
-    {
-      speed_cactus = 0;
+  {
+    speed_cactus = 0;
  80003f0:	2300      	movs	r3, #0
  80003f2:	6013      	str	r3, [r2, #0]
-      cactus1.x_cactus--;
+    cactus1.x_cactus--;
  80003f4:	4a08      	ldr	r2, [pc, #32]	; (8000418 <cactus_work+0x4c>)
  80003f6:	6813      	ldr	r3, [r2, #0]
-      if (cactus1.x_cactus == 0) //after cactus go to the end of display  (x display max=128)
+    if (cactus1.x_cactus == 0) //after cactus go to the end of display  (x display max=128)
  80003f8:	3b01      	subs	r3, #1
  80003fa:	d005      	beq.n	8000408 <cactus_work+0x3c>
-      cactus1.x_cactus--;
+    cactus1.x_cactus--;
  80003fc:	6013      	str	r3, [r2, #0]
  80003fe:	4770      	bx	lr
-      speed_cactus_now = 140;
+    speed_cactus_now = 140;
  8000400:	238c      	movs	r3, #140	; 0x8c
  8000402:	e7f1      	b.n	80003e8 <cactus_work+0x1c>
-      speed_cactus_now = 100;
+    speed_cactus_now = 100;
  8000404:	2364      	movs	r3, #100	; 0x64
  8000406:	e7ef      	b.n	80003e8 <cactus_work+0x1c>
-      {
-        cactus1.x_cactus = 122; //cactus appear at start of display
+    {
+      cactus1.x_cactus = 122; //cactus appear at start of display
  8000408:	217a      	movs	r1, #122	; 0x7a
-        cactus1.fl_cactus_destroy = 0;
+      cactus1.fl_cactus_destroy = 0;
  800040a:	6093      	str	r3, [r2, #8]
-        cactus1.x_cactus = 122; //cactus appear at start of display
+      cactus1.x_cactus = 122; //cactus appear at start of display
  800040c:	6011      	str	r1, [r2, #0]
  800040e:	4770      	bx	lr
  8000410:	20000034 	.word	0x20000034
@@ -435,58 +432,57 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000418:	200004ac 	.word	0x200004ac
 
 0800041c <bird_work>:
-  void bird_work()
-    {
-      //////////////////////////////////Bird////////////////////////////////////////////////////////////////////////
-      int speed_bird_now;
-      //////////////////////Increase speed bird by score
-      if (score < 4000) // score display= score /10
+void bird_work()
+{
+  //////////////////////////////////Bird////////////////////////////////////////////////////////////////////////
+  int speed_bird_now;
+  //////////////////////Increase speed bird by score
+  if (score < 4000) // score display= score /10
  800041c:	4b0f      	ldr	r3, [pc, #60]	; (800045c <bird_work+0x40>)
  800041e:	681b      	ldr	r3, [r3, #0]
  8000420:	f5b3 6f7a 	cmp.w	r3, #4000	; 0xfa0
  8000424:	db16      	blt.n	8000454 <bird_work+0x38>
-        speed_bird_now = 200;
-      else if (score <= 5000)
+    speed_bird_now = 200;
+  else if (score <= 5000)
  8000426:	f241 3288 	movw	r2, #5000	; 0x1388
  800042a:	4293      	cmp	r3, r2
  800042c:	dd14      	ble.n	8000458 <bird_work+0x3c>
-        speed_bird_now = 150;
-      else if (score <= 6000)
-        speed_bird_now = 80;
-      else if (score <= 7000)
-        speed_bird_now = 40;
+    speed_bird_now = 150;
+  else if (score <= 6000)
+    speed_bird_now = 80;
+  else if (score > 6000)
+    speed_bird_now = 40;
  800042e:	f241 7270 	movw	r2, #6000	; 0x1770
  8000432:	4293      	cmp	r3, r2
  8000434:	bfd4      	ite	le
  8000436:	2350      	movle	r3, #80	; 0x50
  8000438:	2328      	movgt	r3, #40	; 0x28
-      else if (score > 7000)
-        speed_bird_now = 40;
 
-      if (speed_bird > speed_bird_now)
+
+  if (speed_bird > speed_bird_now)
  800043a:	4a09      	ldr	r2, [pc, #36]	; (8000460 <bird_work+0x44>)
  800043c:	6811      	ldr	r1, [r2, #0]
  800043e:	428b      	cmp	r3, r1
  8000440:	da07      	bge.n	8000452 <bird_work+0x36>
-      {
-        speed_bird = 0;
+  {
+    speed_bird = 0;
  8000442:	2300      	movs	r3, #0
  8000444:	6013      	str	r3, [r2, #0]
-        bird1.x_bird--;
+    bird1.x_bird--;
  8000446:	4a07      	ldr	r2, [pc, #28]	; (8000464 <bird_work+0x48>)
  8000448:	6813      	ldr	r3, [r2, #0]
-        if (bird1.x_bird == 0) //after bird go to the end of display  (x display max=128)
+    if (bird1.x_bird == 0) //after bird go to the end of display  (x display max=128)
  800044a:	3b01      	subs	r3, #1
-        {
-          bird1.x_bird = 122; //bird appear at start of display
+    {
+      bird1.x_bird = 122; //bird appear at start of display
  800044c:	bf08      	it	eq
  800044e:	237a      	moveq	r3, #122	; 0x7a
  8000450:	6013      	str	r3, [r2, #0]
  8000452:	4770      	bx	lr
-        speed_bird_now = 200;
+    speed_bird_now = 200;
  8000454:	23c8      	movs	r3, #200	; 0xc8
  8000456:	e7f0      	b.n	800043a <bird_work+0x1e>
-        speed_bird_now = 150;
+    speed_bird_now = 150;
  8000458:	2396      	movs	r3, #150	; 0x96
  800045a:	e7ee      	b.n	800043a <bird_work+0x1e>
  800045c:	20000034 	.word	0x20000034
@@ -494,38 +490,38 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000464:	200004b8 	.word	0x200004b8
 
 08000468 <bird_wing_work>:
-      }
-    }
+  }
+}
 
-  void bird_wing_work()
-  {
-	  if (speed_bird_wing>150)
+void bird_wing_work()
+{
+  if (speed_bird_wing > 150)
  8000468:	4b07      	ldr	r3, [pc, #28]	; (8000488 <bird_wing_work+0x20>)
  800046a:	681a      	ldr	r2, [r3, #0]
  800046c:	2a96      	cmp	r2, #150	; 0x96
  800046e:	dd09      	ble.n	8000484 <bird_wing_work+0x1c>
-		{
-			speed_bird_wing=0;
+  {
+    speed_bird_wing = 0;
  8000470:	2200      	movs	r2, #0
  8000472:	601a      	str	r2, [r3, #0]
 
-			if (bird1.bird_wing==0)
+    if (bird1.bird_wing == 0)
  8000474:	4b05      	ldr	r3, [pc, #20]	; (800048c <bird_wing_work+0x24>)
  8000476:	6899      	ldr	r1, [r3, #8]
  8000478:	b911      	cbnz	r1, 8000480 <bird_wing_work+0x18>
-			{
-				bird1.bird_wing=1;
+    {
+      bird1.bird_wing = 1;
  800047a:	2201      	movs	r2, #1
-			}
-			else if (bird1.bird_wing==1)
-			{
-				bird1.bird_wing=0;
+    }
+    else if (bird1.bird_wing == 1)
+    {
+      bird1.bird_wing = 0;
  800047c:	609a      	str	r2, [r3, #8]
-			}
-		}
+    }
   }
+}
  800047e:	e001      	b.n	8000484 <bird_wing_work+0x1c>
-			else if (bird1.bird_wing==1)
+    else if (bird1.bird_wing == 1)
  8000480:	2901      	cmp	r1, #1
  8000482:	d0fb      	beq.n	800047c <bird_wing_work+0x14>
  8000484:	4770      	bx	lr
@@ -535,15 +531,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 08000490 <display>:
 
-  void display()
-  {
+void display()
+{
  8000490:	b573      	push	{r0, r1, r4, r5, r6, lr}
 
-    /////////////////Display//////////////////////////////////////////////////////////
-    SH1106_Fill(0x00);                     //clear screen
+  /////////////////Display//////////////////////////////////////////////////////////
+  SH1106_Fill(0x00);                     //clear screen
  8000492:	2000      	movs	r0, #0
  8000494:	f000 fcee 	bl	8000e74 <SH1106_Fill>
-    LCD_DrawBitmap(1, 58, 127, 8, ground); //display ground
+  LCD_DrawBitmap(1, 58, 127, 8, ground); //display ground
  8000498:	4b67      	ldr	r3, [pc, #412]	; (8000638 <display+0x1a8>)
  800049a:	227f      	movs	r2, #127	; 0x7f
  800049c:	9300      	str	r3, [sp, #0]
@@ -551,30 +547,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80004a0:	2308      	movs	r3, #8
  80004a2:	2001      	movs	r0, #1
  80004a4:	f000 fef0 	bl	8001288 <LCD_DrawBitmap>
-    LCD_HLine(1, 127, 58); ////display line ground
+  LCD_HLine(1, 127, 58);                 ////display line ground
  80004a8:	223a      	movs	r2, #58	; 0x3a
  80004aa:	217f      	movs	r1, #127	; 0x7f
  80004ac:	2001      	movs	r0, #1
  80004ae:	f000 fcef 	bl	8000e90 <LCD_HLine>
 
-    if (cactus1.fl_cactus_destroy  == 0)
+  if (cactus1.fl_cactus_destroy == 0)
  80004b2:	4b62      	ldr	r3, [pc, #392]	; (800063c <display+0x1ac>)
  80004b4:	689a      	ldr	r2, [r3, #8]
  80004b6:	2a00      	cmp	r2, #0
  80004b8:	f040 8081 	bne.w	80005be <display+0x12e>
-      LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus, 6, 16, cactus); //display cactus
+    LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus, 6, 16, cactus); //display cactus
  80004bc:	7919      	ldrb	r1, [r3, #4]
  80004be:	7818      	ldrb	r0, [r3, #0]
  80004c0:	4b5f      	ldr	r3, [pc, #380]	; (8000640 <display+0x1b0>)
  80004c2:	2206      	movs	r2, #6
  80004c4:	9300      	str	r3, [sp, #0]
  80004c6:	2310      	movs	r3, #16
-    else
-      LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus + 9, 3, 7, cactus_dead3x7);
+  else
+    LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus + 9, 3, 7, cactus_dead3x7);
  80004c8:	f000 fede 	bl	8001288 <LCD_DrawBitmap>
 
-
-    if ((bird1.bird_wing == 1) && (score>2300))
+  if ((bird1.bird_wing == 1) && (score > 2300))
  80004cc:	4b5d      	ldr	r3, [pc, #372]	; (8000644 <display+0x1b4>)
  80004ce:	4e5e      	ldr	r6, [pc, #376]	; (8000648 <display+0x1b8>)
  80004d0:	689a      	ldr	r2, [r3, #8]
@@ -584,41 +579,36 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80004da:	6831      	ldr	r1, [r6, #0]
  80004dc:	4291      	cmp	r1, r2
  80004de:	dd07      	ble.n	80004f0 <display+0x60>
-	  LCD_DrawBitmap(bird1.x_bird, bird1.y_bird, 14, 12, bird_down_14x12);
+    LCD_DrawBitmap(bird1.x_bird, bird1.y_bird, 14, 12, bird_down_14x12);
  80004e0:	7919      	ldrb	r1, [r3, #4]
  80004e2:	7818      	ldrb	r0, [r3, #0]
  80004e4:	4b59      	ldr	r3, [pc, #356]	; (800064c <display+0x1bc>)
  80004e6:	220e      	movs	r2, #14
  80004e8:	9300      	str	r3, [sp, #0]
  80004ea:	230c      	movs	r3, #12
-	else if ((bird1.bird_wing == 0) && (score>2300))
-		 LCD_DrawBitmap(bird1.x_bird, bird1.y_bird-6, 14, 12, bird_up_14x12); //display bird
+  else if ((bird1.bird_wing == 0) && (score > 2300))
+    LCD_DrawBitmap(bird1.x_bird, bird1.y_bird - 6, 14, 12, bird_up_14x12); //display bird
  80004ec:	f000 fecc 	bl	8001288 <LCD_DrawBitmap>
 
-
-    if (dino1.dino_status == 1) //dino dead
+  if (dino1.dino_status == 1) //dino dead
  80004f0:	4c57      	ldr	r4, [pc, #348]	; (8000650 <display+0x1c0>)
  80004f2:	68a3      	ldr	r3, [r4, #8]
  80004f4:	2b01      	cmp	r3, #1
  80004f6:	d17b      	bne.n	80005f0 <display+0x160>
-      LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_dead);
+    LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_dead);
  80004f8:	7921      	ldrb	r1, [r4, #4]
  80004fa:	7820      	ldrb	r0, [r4, #0]
  80004fc:	4b55      	ldr	r3, [pc, #340]	; (8000654 <display+0x1c4>)
-    else if (dino1.fl_dino_foot == 1)
-      LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_right);
-    else if (dino1.fl_dino_foot == 0)
-      LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_left); //display dino
+  else if (dino1.fl_dino_foot == 1)
+    LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_right);
+  else if (dino1.fl_dino_foot == 0)
+    LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_left); //display dino
  80004fe:	9300      	str	r3, [sp, #0]
  8000500:	2314      	movs	r3, #20
  8000502:	461a      	mov	r2, r3
  8000504:	f000 fec0 	bl	8001288 <LCD_DrawBitmap>
 
-
-
-
-
-    if ((sword1.fl_sword == 1) && (sword1.fl_dino_have_sword == 1))
+  if ((sword1.fl_sword == 1) && (sword1.fl_dino_have_sword == 1))
  8000508:	4d53      	ldr	r5, [pc, #332]	; (8000658 <display+0x1c8>)
  800050a:	696b      	ldr	r3, [r5, #20]
  800050c:	2b01      	cmp	r3, #1
@@ -626,7 +616,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000510:	68ab      	ldr	r3, [r5, #8]
  8000512:	2b01      	cmp	r3, #1
  8000514:	d10b      	bne.n	800052e <display+0x9e>
-      LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino - 1, 13, 13, sword13x13_up); //display sword
+    LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino - 1, 13, 13, sword13x13_up); //display sword
  8000516:	4b51      	ldr	r3, [pc, #324]	; (800065c <display+0x1cc>)
  8000518:	6861      	ldr	r1, [r4, #4]
  800051a:	6820      	ldr	r0, [r4, #0]
@@ -635,17 +625,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000520:	461a      	mov	r2, r3
  8000522:	3901      	subs	r1, #1
  8000524:	300f      	adds	r0, #15
-    else if ((sword1.fl_sword == 0) && (sword1.fl_dino_have_sword == 1))
-      LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino + 6, 19, 7, sword19x7_down);
+  else if ((sword1.fl_sword == 0) && (sword1.fl_dino_have_sword == 1))
+    LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino + 6, 19, 7, sword19x7_down);
  8000526:	b2c9      	uxtb	r1, r1
  8000528:	b2c0      	uxtb	r0, r0
  800052a:	f000 fead 	bl	8001288 <LCD_DrawBitmap>
 
-    if (sword1.fl_sword_must_appear == 1)
+  if (sword1.fl_sword_must_appear == 1)
  800052e:	692b      	ldr	r3, [r5, #16]
  8000530:	2b01      	cmp	r3, #1
  8000532:	d107      	bne.n	8000544 <display+0xb4>
-      LCD_DrawBitmap(sword1.x_sword, sword1.y_sword, 13, 13, sword13x13_up);//display sword to eat
+    LCD_DrawBitmap(sword1.x_sword, sword1.y_sword, 13, 13, sword13x13_up); //display sword to eat
  8000534:	4b49      	ldr	r3, [pc, #292]	; (800065c <display+0x1cc>)
  8000536:	7929      	ldrb	r1, [r5, #4]
  8000538:	7828      	ldrb	r0, [r5, #0]
@@ -654,24 +644,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800053e:	461a      	mov	r2, r3
  8000540:	f000 fea2 	bl	8001288 <LCD_DrawBitmap>
 
-
-    LCD_PutStr(85, 2, " HI:", &Font5x7);
-    LCD_PutInt(5, 2, score / 10, &Font5x7);    //display score
+  LCD_PutStr(85, 2, " HI:", &Font5x7);
+  LCD_PutInt(5, 2, score / 10, &Font5x7);    //display score
  8000544:	240a      	movs	r4, #10
-    LCD_PutStr(85, 2, " HI:", &Font5x7);
+  LCD_PutStr(85, 2, " HI:", &Font5x7);
  8000546:	4b46      	ldr	r3, [pc, #280]	; (8000660 <display+0x1d0>)
  8000548:	4a46      	ldr	r2, [pc, #280]	; (8000664 <display+0x1d4>)
  800054a:	2102      	movs	r1, #2
  800054c:	2055      	movs	r0, #85	; 0x55
  800054e:	f000 fe49 	bl	80011e4 <LCD_PutStr>
-    LCD_PutInt(5, 2, score / 10, &Font5x7);    //display score
+  LCD_PutInt(5, 2, score / 10, &Font5x7);    //display score
  8000552:	6832      	ldr	r2, [r6, #0]
  8000554:	4b42      	ldr	r3, [pc, #264]	; (8000660 <display+0x1d0>)
  8000556:	fb92 f2f4 	sdiv	r2, r2, r4
  800055a:	2102      	movs	r1, #2
  800055c:	2005      	movs	r0, #5
  800055e:	f000 fe61 	bl	8001224 <LCD_PutInt>
-    LCD_PutInt(110, 2, hscore / 10, &Font5x7); //display highest score
+  LCD_PutInt(110, 2, hscore / 10, &Font5x7); //display highest score
  8000562:	4b41      	ldr	r3, [pc, #260]	; (8000668 <display+0x1d8>)
  8000564:	2102      	movs	r1, #2
  8000566:	681a      	ldr	r2, [r3, #0]
@@ -680,28 +669,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800056e:	4b3c      	ldr	r3, [pc, #240]	; (8000660 <display+0x1d0>)
  8000570:	f000 fe58 	bl	8001224 <LCD_PutInt>
 
-    if (sword1.durable_sword>0) //display dino have sword time
+  if (sword1.durable_sword > 0) //display dino have sword time
  8000574:	68ea      	ldr	r2, [r5, #12]
  8000576:	2a00      	cmp	r2, #0
  8000578:	dd0c      	ble.n	8000594 <display+0x104>
-    {
-    	LCD_PutInt(50, 2, sword1.durable_sword/10, &Font5x7);
+  {
+    LCD_PutInt(50, 2, sword1.durable_sword / 10, &Font5x7);
  800057a:	4b39      	ldr	r3, [pc, #228]	; (8000660 <display+0x1d0>)
  800057c:	fb92 f2f4 	sdiv	r2, r2, r4
  8000580:	2102      	movs	r1, #2
  8000582:	2032      	movs	r0, #50	; 0x32
  8000584:	f000 fe4e 	bl	8001224 <LCD_PutInt>
-    	LCD_PutStr(65, 2, "%", &Font5x7);
+    LCD_PutStr(65, 2, "%", &Font5x7);
  8000588:	4b35      	ldr	r3, [pc, #212]	; (8000660 <display+0x1d0>)
  800058a:	4a38      	ldr	r2, [pc, #224]	; (800066c <display+0x1dc>)
  800058c:	2102      	movs	r1, #2
  800058e:	2041      	movs	r0, #65	; 0x41
  8000590:	f000 fe28 	bl	80011e4 <LCD_PutStr>
+  }
 
-    }
-
-
-    if ((score % 1000 == 0) && (fl_invert == 1)) //change day and night
+  if ((score % 1000 == 0) && (fl_invert == 1)) //change day and night
  8000594:	f44f 737a 	mov.w	r3, #1000	; 0x3e8
  8000598:	6832      	ldr	r2, [r6, #0]
  800059a:	fb92 f4f3 	sdiv	r4, r2, r3
@@ -711,23 +698,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80005a6:	682b      	ldr	r3, [r5, #0]
  80005a8:	2b01      	cmp	r3, #1
  80005aa:	d13c      	bne.n	8000626 <display+0x196>
-    {
-      SH1106_SetInvert(0);
+  {
+    SH1106_SetInvert(0);
  80005ac:	4620      	mov	r0, r4
  80005ae:	f000 fba3 	bl	8000cf8 <SH1106_SetInvert>
-      fl_invert = 0;
+    fl_invert = 0;
  80005b2:	602c      	str	r4, [r5, #0]
-    {
-      SH1106_SetInvert(1);
-      fl_invert = 1;
-    }
-    SH1106_Flush();
+  {
+    SH1106_SetInvert(1);
+    fl_invert = 1;
   }
+  SH1106_Flush();
+}
  80005b4:	b002      	add	sp, #8
  80005b6:	e8bd 4070 	ldmia.w	sp!, {r4, r5, r6, lr}
-    SH1106_Flush();
+  SH1106_Flush();
  80005ba:	f000 bc15 	b.w	8000de8 <SH1106_Flush>
-      LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus + 9, 3, 7, cactus_dead3x7);
+    LCD_DrawBitmap(cactus1.x_cactus, cactus1.y_cactus + 9, 3, 7, cactus_dead3x7);
  80005be:	6859      	ldr	r1, [r3, #4]
  80005c0:	7818      	ldrb	r0, [r3, #0]
  80005c2:	4b2c      	ldr	r3, [pc, #176]	; (8000674 <display+0x1e4>)
@@ -737,14 +724,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80005ca:	2307      	movs	r3, #7
  80005cc:	b2c9      	uxtb	r1, r1
  80005ce:	e77b      	b.n	80004c8 <display+0x38>
-	else if ((bird1.bird_wing == 0) && (score>2300))
+  else if ((bird1.bird_wing == 0) && (score > 2300))
  80005d0:	2a00      	cmp	r2, #0
  80005d2:	d18d      	bne.n	80004f0 <display+0x60>
  80005d4:	f640 02fc 	movw	r2, #2300	; 0x8fc
  80005d8:	6831      	ldr	r1, [r6, #0]
  80005da:	4291      	cmp	r1, r2
  80005dc:	dd88      	ble.n	80004f0 <display+0x60>
-		 LCD_DrawBitmap(bird1.x_bird, bird1.y_bird-6, 14, 12, bird_up_14x12); //display bird
+    LCD_DrawBitmap(bird1.x_bird, bird1.y_bird - 6, 14, 12, bird_up_14x12); //display bird
  80005de:	6859      	ldr	r1, [r3, #4]
  80005e0:	7818      	ldrb	r0, [r3, #0]
  80005e2:	4b25      	ldr	r3, [pc, #148]	; (8000678 <display+0x1e8>)
@@ -754,30 +741,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80005ea:	230c      	movs	r3, #12
  80005ec:	b2c9      	uxtb	r1, r1
  80005ee:	e77d      	b.n	80004ec <display+0x5c>
-    else if (dino1.fl_dino_foot == 1)
+  else if (dino1.fl_dino_foot == 1)
  80005f0:	6923      	ldr	r3, [r4, #16]
  80005f2:	2b01      	cmp	r3, #1
  80005f4:	d103      	bne.n	80005fe <display+0x16e>
-      LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_right);
+    LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_right);
  80005f6:	7921      	ldrb	r1, [r4, #4]
  80005f8:	7820      	ldrb	r0, [r4, #0]
  80005fa:	4b20      	ldr	r3, [pc, #128]	; (800067c <display+0x1ec>)
  80005fc:	e77f      	b.n	80004fe <display+0x6e>
-    else if (dino1.fl_dino_foot == 0)
+  else if (dino1.fl_dino_foot == 0)
  80005fe:	2b00      	cmp	r3, #0
  8000600:	d182      	bne.n	8000508 <display+0x78>
-      LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_left); //display dino
+    LCD_DrawBitmap(dino1.x_dino, dino1.y_dino, 20, 20, googledino20x20_left); //display dino
  8000602:	7921      	ldrb	r1, [r4, #4]
  8000604:	7820      	ldrb	r0, [r4, #0]
  8000606:	4b1e      	ldr	r3, [pc, #120]	; (8000680 <display+0x1f0>)
  8000608:	e779      	b.n	80004fe <display+0x6e>
-    else if ((sword1.fl_sword == 0) && (sword1.fl_dino_have_sword == 1))
+  else if ((sword1.fl_sword == 0) && (sword1.fl_dino_have_sword == 1))
  800060a:	2b00      	cmp	r3, #0
  800060c:	d18f      	bne.n	800052e <display+0x9e>
  800060e:	68ab      	ldr	r3, [r5, #8]
  8000610:	2b01      	cmp	r3, #1
  8000612:	d18c      	bne.n	800052e <display+0x9e>
-      LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino + 6, 19, 7, sword19x7_down);
+    LCD_DrawBitmap(dino1.x_dino + 15, dino1.y_dino + 6, 19, 7, sword19x7_down);
  8000614:	6861      	ldr	r1, [r4, #4]
  8000616:	6820      	ldr	r0, [r4, #0]
  8000618:	4b1a      	ldr	r3, [pc, #104]	; (8000684 <display+0x1f4>)
@@ -787,13 +774,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000620:	2307      	movs	r3, #7
  8000622:	2213      	movs	r2, #19
  8000624:	e77f      	b.n	8000526 <display+0x96>
-    else if ((score % 1000 == 0) && (fl_invert == 0))
+  else if ((score % 1000 == 0) && (fl_invert == 0))
  8000626:	2b00      	cmp	r3, #0
  8000628:	d1c4      	bne.n	80005b4 <display+0x124>
-      SH1106_SetInvert(1);
+    SH1106_SetInvert(1);
  800062a:	2001      	movs	r0, #1
  800062c:	f000 fb64 	bl	8000cf8 <SH1106_SetInvert>
-      fl_invert = 1;
+    fl_invert = 1;
  8000630:	2301      	movs	r3, #1
  8000632:	602b      	str	r3, [r5, #0]
  8000634:	e7be      	b.n	80005b4 <display+0x124>
@@ -821,87 +808,87 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 08000688 <dino_dead>:
 
-  void dino_dead()
-  {
+void dino_dead()
+{
  8000688:	b538      	push	{r3, r4, r5, lr}
-	LCD_PutStr(30, 20, "GAME OVER", &Font7x10);
+  LCD_PutStr(30, 20, "GAME OVER", &Font7x10);
  800068a:	4a1e      	ldr	r2, [pc, #120]	; (8000704 <dino_dead+0x7c>)
  800068c:	4b1e      	ldr	r3, [pc, #120]	; (8000708 <dino_dead+0x80>)
  800068e:	2114      	movs	r1, #20
  8000690:	201e      	movs	r0, #30
  8000692:	f000 fda7 	bl	80011e4 <LCD_PutStr>
-	SH1106_Flush();
+  SH1106_Flush();
  8000696:	f000 fba7 	bl	8000de8 <SH1106_Flush>
 
-	while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_SET); //if push button again
+  while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_SET)
  800069a:	4c1c      	ldr	r4, [pc, #112]	; (800070c <dino_dead+0x84>)
  800069c:	2101      	movs	r1, #1
  800069e:	4620      	mov	r0, r4
  80006a0:	f001 f88c 	bl	80017bc <HAL_GPIO_ReadPin>
  80006a4:	2801      	cmp	r0, #1
  80006a6:	d0f9      	beq.n	800069c <dino_dead+0x14>
-	//reset game
-   cactus1.x_cactus = 122;
-   cactus1.y_cactus = 42;         //start position cactus
-   cactus1.fl_cactus_destroy = 0;
+    ; //if push button again
+      //reset game
+  cactus1.x_cactus = 122;
+  cactus1.y_cactus = 42; //start position cactus
+  cactus1.fl_cactus_destroy = 0;
  80006a8:	2400      	movs	r4, #0
  80006aa:	217a      	movs	r1, #122	; 0x7a
  80006ac:	222a      	movs	r2, #42	; 0x2a
-   cactus1.x_cactus = 122;
+  cactus1.x_cactus = 122;
  80006ae:	4b18      	ldr	r3, [pc, #96]	; (8000710 <dino_dead+0x88>)
 
-   bird1.x_bird =110;
-   bird1.y_bird =15;
+  bird1.x_bird = 110;
+  bird1.y_bird = 15;
  80006b0:	206e      	movs	r0, #110	; 0x6e
-   cactus1.fl_cactus_destroy = 0;
+  cactus1.fl_cactus_destroy = 0;
  80006b2:	e883 0016 	stmia.w	r3, {r1, r2, r4}
-   bird1.y_bird =15;
+  bird1.y_bird = 15;
  80006b6:	220f      	movs	r2, #15
-   bird1.x_bird =110;
+  bird1.x_bird = 110;
  80006b8:	4b16      	ldr	r3, [pc, #88]	; (8000714 <dino_dead+0x8c>)
-   bird1.bird_wing = 0; //wing up
+  bird1.bird_wing = 0; //wing up
 
-   sword1.x_sword = 0;
-   sword1.y_sword = 20; //sword appear position
-   sword1.fl_sword = 1;
+  sword1.x_sword = 0;
+  sword1.y_sword = 20; //sword appear position
+  sword1.fl_sword = 1;
  80006ba:	2501      	movs	r5, #1
-   bird1.y_bird =15;
+  bird1.y_bird = 15;
  80006bc:	e883 0005 	stmia.w	r3, {r0, r2}
-   sword1.y_sword = 20; //sword appear position
+  sword1.y_sword = 20; //sword appear position
  80006c0:	2214      	movs	r2, #20
-   bird1.bird_wing = 0; //wing up
+  bird1.bird_wing = 0; //wing up
  80006c2:	609c      	str	r4, [r3, #8]
-   sword1.x_sword = 0;
+  sword1.x_sword = 0;
  80006c4:	4b14      	ldr	r3, [pc, #80]	; (8000718 <dino_dead+0x90>)
-   sword1.durable_sword=0;
-   sword1.fl_sword_must_appear = 0;
-
+  sword1.fl_dino_have_sword = 0; //dino do not have sword
+  sword1.durable_sword = 0;
+  sword1.fl_sword_must_appear = 0;
 
   dino1.x_dino = 10;
   dino1.y_dino = 38;          //start position dino 20*20
  80006c6:	f04f 0e26 	mov.w	lr, #38	; 0x26
-   sword1.y_sword = 20; //sword appear position
+  sword1.y_sword = 20; //sword appear position
  80006ca:	605a      	str	r2, [r3, #4]
   dino1.y_dino = 38;          //start position dino 20*20
  80006cc:	220a      	movs	r2, #10
-   sword1.x_sword = 0;
+  sword1.x_sword = 0;
  80006ce:	601c      	str	r4, [r3, #0]
-   sword1.fl_dino_have_sword = 0; //dino do not have sword
+  sword1.fl_dino_have_sword = 0; //dino do not have sword
  80006d0:	609c      	str	r4, [r3, #8]
-   sword1.durable_sword=0;
+  sword1.durable_sword = 0;
  80006d2:	60dc      	str	r4, [r3, #12]
-   sword1.fl_sword_must_appear = 0;
+  sword1.fl_sword_must_appear = 0;
  80006d4:	611c      	str	r4, [r3, #16]
-   sword1.fl_sword = 1;
+  sword1.fl_sword = 1;
  80006d6:	615d      	str	r5, [r3, #20]
   dino1.x_dino = 10;
  80006d8:	4b10      	ldr	r3, [pc, #64]	; (800071c <dino_dead+0x94>)
+  dino1.level_jump_dino = -2; //level dino jump/drop
   dino1.dino_status = 0;      // Dino dead or alive, 0= alive, 1=dead
   dino1.fl_dino_foot = 1;
 
-
-
-	SH1106_SetInvert(1);
+  SH1106_SetInvert(1);
  80006da:	4628      	mov	r0, r5
   dino1.y_dino = 38;          //start position dino 20*20
  80006dc:	e883 4004 	stmia.w	r3, {r2, lr}
@@ -913,29 +900,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80006e6:	60da      	str	r2, [r3, #12]
   dino1.fl_dino_foot = 1;
  80006e8:	611d      	str	r5, [r3, #16]
-	SH1106_SetInvert(1);
+  SH1106_SetInvert(1);
  80006ea:	f000 fb05 	bl	8000cf8 <SH1106_SetInvert>
-	fl_invert = 1;
+  fl_invert = 1;
  80006ee:	4b0c      	ldr	r3, [pc, #48]	; (8000720 <dino_dead+0x98>)
-	if (score > hscore)
+  if (score > hscore)
  80006f0:	4a0c      	ldr	r2, [pc, #48]	; (8000724 <dino_dead+0x9c>)
-	fl_invert = 1;
+  fl_invert = 1;
  80006f2:	601d      	str	r5, [r3, #0]
-	if (score > hscore)
+  if (score > hscore)
  80006f4:	4b0c      	ldr	r3, [pc, #48]	; (8000728 <dino_dead+0xa0>)
  80006f6:	6810      	ldr	r0, [r2, #0]
  80006f8:	6819      	ldr	r1, [r3, #0]
-	{
-	  hscore = score;
-	}
-	score = 0;
+  {
+    hscore = score;
+  }
+  score = 0;
  80006fa:	601c      	str	r4, [r3, #0]
-	if (score > hscore)
+  if (score > hscore)
  80006fc:	4281      	cmp	r1, r0
-	  hscore = score;
+    hscore = score;
  80006fe:	bfc8      	it	gt
  8000700:	6011      	strgt	r1, [r2, #0]
-	score = 0;
+  score = 0;
  8000702:	bd38      	pop	{r3, r4, r5, pc}
  8000704:	08002a9d 	.word	0x08002a9d
  8000708:	08002699 	.word	0x08002699
@@ -985,14 +972,14 @@ void SystemClock_Config(void)
  8000750:	930b      	str	r3, [sp, #44]	; 0x2c
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
  8000752:	f001 f83f 	bl	80017d4 <HAL_RCC_OscConfig>
+    Error_Handler();
   }
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
  8000756:	2100      	movs	r1, #0
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
  8000758:	230f      	movs	r3, #15
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -1000,7 +987,7 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
  800075a:	a801      	add	r0, sp, #4
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
  800075c:	9301      	str	r3, [sp, #4]
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
  800075e:	9102      	str	r1, [sp, #8]
@@ -1046,11 +1033,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, CS_Pin|DC_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CS_Pin | DC_Pin, GPIO_PIN_RESET);
  800078a:	f44f 41a0 	mov.w	r1, #20480	; 0x5000
   __HAL_RCC_GPIOC_CLK_ENABLE();
  800078e:	699a      	ldr	r2, [r3, #24]
-  HAL_GPIO_WritePin(GPIOB, CS_Pin|DC_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CS_Pin | DC_Pin, GPIO_PIN_RESET);
  8000790:	489a      	ldr	r0, [pc, #616]	; (80009fc <main+0x28c>)
   __HAL_RCC_GPIOC_CLK_ENABLE();
  8000792:	f042 0210 	orr.w	r2, r2, #16
@@ -1060,7 +1047,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PC13 PC1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_1;
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
  800079a:	2400      	movs	r4, #0
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -1072,7 +1059,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : BUTTON_2_Pin BUTTON_1_Pin */
-  GPIO_InitStruct.Pin = BUTTON_2_Pin|BUTTON_1_Pin;
+  GPIO_InitStruct.Pin = BUTTON_2_Pin | BUTTON_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
  80007a6:	2601      	movs	r6, #1
@@ -1082,7 +1069,7 @@ static void MX_GPIO_Init(void)
  80007ae:	699a      	ldr	r2, [r3, #24]
 
   /*Configure GPIO pins : CS_Pin DC_Pin */
-  GPIO_InitStruct.Pin = CS_Pin|DC_Pin;
+  GPIO_InitStruct.Pin = CS_Pin | DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1123,13 +1110,13 @@ static void MX_GPIO_Init(void)
  80007da:	f042 0204 	orr.w	r2, r2, #4
  80007de:	619a      	str	r2, [r3, #24]
  80007e0:	699b      	ldr	r3, [r3, #24]
-  HAL_GPIO_WritePin(GPIOB, CS_Pin|DC_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CS_Pin | DC_Pin, GPIO_PIN_RESET);
  80007e2:	2200      	movs	r2, #0
   __HAL_RCC_GPIOA_CLK_ENABLE();
  80007e4:	f003 0304 	and.w	r3, r3, #4
  80007e8:	9305      	str	r3, [sp, #20]
  80007ea:	9b05      	ldr	r3, [sp, #20]
-  HAL_GPIO_WritePin(GPIOB, CS_Pin|DC_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CS_Pin | DC_Pin, GPIO_PIN_RESET);
  80007ec:	f000 ffec 	bl	80017c8 <HAL_GPIO_WritePin>
   HAL_GPIO_WritePin(OLED_RESET_GPIO_Port, OLED_RESET_Pin, GPIO_PIN_RESET);
  80007f0:	2200      	movs	r2, #0
@@ -1146,12 +1133,12 @@ static void MX_GPIO_Init(void)
  8000808:	2104      	movs	r1, #4
  800080a:	487f      	ldr	r0, [pc, #508]	; (8000a08 <main+0x298>)
  800080c:	f000 ffdc 	bl	80017c8 <HAL_GPIO_WritePin>
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_1;
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_1;
  8000810:	f242 0302 	movw	r3, #8194	; 0x2002
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
  8000814:	a908      	add	r1, sp, #32
  8000816:	487a      	ldr	r0, [pc, #488]	; (8000a00 <main+0x290>)
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_1;
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_1;
  8000818:	9308      	str	r3, [sp, #32]
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
  800081a:	9409      	str	r4, [sp, #36]	; 0x24
@@ -1159,12 +1146,12 @@ static void MX_GPIO_Init(void)
  800081c:	940a      	str	r4, [sp, #40]	; 0x28
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
  800081e:	f000 fee1 	bl	80015e4 <HAL_GPIO_Init>
-  GPIO_InitStruct.Pin = BUTTON_2_Pin|BUTTON_1_Pin;
+  GPIO_InitStruct.Pin = BUTTON_2_Pin | BUTTON_1_Pin;
  8000822:	2381      	movs	r3, #129	; 0x81
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
  8000824:	a908      	add	r1, sp, #32
  8000826:	4876      	ldr	r0, [pc, #472]	; (8000a00 <main+0x290>)
-  GPIO_InitStruct.Pin = BUTTON_2_Pin|BUTTON_1_Pin;
+  GPIO_InitStruct.Pin = BUTTON_2_Pin | BUTTON_1_Pin;
  8000828:	9308      	str	r3, [sp, #32]
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
  800082a:	9409      	str	r4, [sp, #36]	; 0x24
@@ -1172,12 +1159,12 @@ static void MX_GPIO_Init(void)
  800082c:	960a      	str	r6, [sp, #40]	; 0x28
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
  800082e:	f000 fed9 	bl	80015e4 <HAL_GPIO_Init>
-  GPIO_InitStruct.Pin = CS_Pin|DC_Pin;
+  GPIO_InitStruct.Pin = CS_Pin | DC_Pin;
  8000832:	f44f 43a0 	mov.w	r3, #20480	; 0x5000
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
  8000836:	a908      	add	r1, sp, #32
  8000838:	4870      	ldr	r0, [pc, #448]	; (80009fc <main+0x28c>)
-  GPIO_InitStruct.Pin = CS_Pin|DC_Pin;
+  GPIO_InitStruct.Pin = CS_Pin | DC_Pin;
  800083a:	9308      	str	r3, [sp, #32]
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
  800083c:	9609      	str	r6, [sp, #36]	; 0x24
@@ -1392,50 +1379,50 @@ static void MX_GPIO_Init(void)
  8000962:	4828      	ldr	r0, [pc, #160]	; (8000a04 <main+0x294>)
  8000964:	4649      	mov	r1, r9
  8000966:	f000 ff2f 	bl	80017c8 <HAL_GPIO_WritePin>
-   cactus1.y_cactus = 42;         //start position cactus
+  cactus1.y_cactus = 42; //start position cactus
  800096a:	222a      	movs	r2, #42	; 0x2a
  800096c:	207a      	movs	r0, #122	; 0x7a
-   cactus1.x_cactus = 122;
+  cactus1.x_cactus = 122;
  800096e:	4b2c      	ldr	r3, [pc, #176]	; (8000a20 <main+0x2b0>)
-   bird1.y_bird =15;
+  bird1.y_bird = 15;
  8000970:	250f      	movs	r5, #15
-   cactus1.y_cactus = 42;         //start position cactus
+  cactus1.y_cactus = 42; //start position cactus
  8000972:	e883 0005 	stmia.w	r3, {r0, r2}
-   bird1.y_bird =15;
+  bird1.y_bird = 15;
  8000976:	226e      	movs	r2, #110	; 0x6e
-   cactus1.fl_cactus_destroy = 0;
+  cactus1.fl_cactus_destroy = 0;
  8000978:	609c      	str	r4, [r3, #8]
-   bird1.x_bird =110;
+  bird1.x_bird = 110;
  800097a:	4b2a      	ldr	r3, [pc, #168]	; (8000a24 <main+0x2b4>)
-   bird1.y_bird =15;
+  bird1.y_bird = 15;
  800097c:	e883 0024 	stmia.w	r3, {r2, r5}
-   sword1.y_sword = 20; //sword appear position
+  sword1.y_sword = 20; //sword appear position
  8000980:	2214      	movs	r2, #20
-   bird1.bird_wing = 0; //wing up
+  bird1.bird_wing = 0; //wing up
  8000982:	609c      	str	r4, [r3, #8]
-   sword1.x_sword = 0;
+  sword1.x_sword = 0;
  8000984:	4b28      	ldr	r3, [pc, #160]	; (8000a28 <main+0x2b8>)
-	  	if (speed_dino > 80)
+    if (speed_dino > 80)
  8000986:	4d29      	ldr	r5, [pc, #164]	; (8000a2c <main+0x2bc>)
-   sword1.y_sword = 20; //sword appear position
+  sword1.y_sword = 20; //sword appear position
  8000988:	605a      	str	r2, [r3, #4]
   dino1.y_dino = 38;          //start position dino 20*20
  800098a:	2226      	movs	r2, #38	; 0x26
-   sword1.x_sword = 0;
+  sword1.x_sword = 0;
  800098c:	601c      	str	r4, [r3, #0]
-   sword1.fl_dino_have_sword = 0; //dino do not have sword
+  sword1.fl_dino_have_sword = 0; //dino do not have sword
  800098e:	609c      	str	r4, [r3, #8]
-   sword1.durable_sword=0;
+  sword1.durable_sword = 0;
  8000990:	60dc      	str	r4, [r3, #12]
-   sword1.fl_sword_must_appear = 0;
+  sword1.fl_sword_must_appear = 0;
  8000992:	611c      	str	r4, [r3, #16]
-   sword1.fl_sword = 1;
+  sword1.fl_sword = 1;
  8000994:	615e      	str	r6, [r3, #20]
   dino1.x_dino = 10;
  8000996:	4b26      	ldr	r3, [pc, #152]	; (8000a30 <main+0x2c0>)
   dino1.fl_dino_foot = 1;
  8000998:	611e      	str	r6, [r3, #16]
-	    if (score>2300)
+    if (score > 2300)
  800099a:	4e26      	ldr	r6, [pc, #152]	; (8000a34 <main+0x2c4>)
   dino1.y_dino = 38;          //start position dino 20*20
  800099c:	605a      	str	r2, [r3, #4]
@@ -1449,47 +1436,47 @@ static void MX_GPIO_Init(void)
  80009a8:	f8c3 8000 	str.w	r8, [r3]
   dino1.level_jump_dino = -2; //level dino jump/drop
  80009ac:	60da      	str	r2, [r3, #12]
-	  	if (speed_dino > 80)
+    if (speed_dino > 80)
  80009ae:	682b      	ldr	r3, [r5, #0]
  80009b0:	2b50      	cmp	r3, #80	; 0x50
  80009b2:	dd03      	ble.n	80009bc <main+0x24c>
-	  		speed_dino=0;
+      speed_dino = 0;
  80009b4:	2300      	movs	r3, #0
  80009b6:	602b      	str	r3, [r5, #0]
-	  		dino_work();
+      dino_work();
  80009b8:	f7ff fc5a 	bl	8000270 <dino_work>
-	    sword_work();
+    sword_work();
  80009bc:	f7ff fc9e 	bl	80002fc <sword_work>
-	    cactus_work();
+    cactus_work();
  80009c0:	f7ff fd04 	bl	80003cc <cactus_work>
-	    if (score>2300)
+    if (score > 2300)
  80009c4:	f640 03fc 	movw	r3, #2300	; 0x8fc
  80009c8:	6832      	ldr	r2, [r6, #0]
  80009ca:	429a      	cmp	r2, r3
  80009cc:	dd03      	ble.n	80009d6 <main+0x266>
-			bird_work();
+      bird_work();
  80009ce:	f7ff fd25 	bl	800041c <bird_work>
-			bird_wing_work();
+      bird_wing_work();
  80009d2:	f7ff fd49 	bl	8000468 <bird_wing_work>
-	    if (speed_score_and_display > 50)
+    if (speed_score_and_display > 50)
  80009d6:	4b18      	ldr	r3, [pc, #96]	; (8000a38 <main+0x2c8>)
  80009d8:	681a      	ldr	r2, [r3, #0]
  80009da:	2a32      	cmp	r2, #50	; 0x32
  80009dc:	dd06      	ble.n	80009ec <main+0x27c>
-	      speed_score_and_display = 0;
+      speed_score_and_display = 0;
  80009de:	2200      	movs	r2, #0
  80009e0:	601a      	str	r2, [r3, #0]
-	      score++;
+      score++;
  80009e2:	683b      	ldr	r3, [r7, #0]
  80009e4:	3301      	adds	r3, #1
  80009e6:	603b      	str	r3, [r7, #0]
-	      display();
+      display();
  80009e8:	f7ff fd52 	bl	8000490 <display>
-	    if (dino1.dino_status == 1)
+    if (dino1.dino_status == 1)
  80009ec:	68a3      	ldr	r3, [r4, #8]
  80009ee:	2b01      	cmp	r3, #1
  80009f0:	d1dd      	bne.n	80009ae <main+0x23e>
-	    	dino_dead();
+      dino_dead();
  80009f2:	f7ff fe49 	bl	8000688 <dino_dead>
  80009f6:	e7da      	b.n	80009ae <main+0x23e>
  80009f8:	40021000 	.word	0x40021000
